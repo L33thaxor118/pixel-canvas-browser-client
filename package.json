@@ -1,0 +1,16 @@
+{
+  "name": "azledclientbrowser",
+  "version": "1.0.0",
+  "description": "Client for browser",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "author": "Azriel Alvarado",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.6.4"
+  }
+}
