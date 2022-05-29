@@ -1,11 +1,10 @@
 {
-  "name": "azledclientbrowser",
+  "name": "pixel-canvas-client-browser",
   "version": "1.0.0",
-  "description": "Client for browser",
+  "description": "Pixel Canvas client for usage within a browser",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
   "author": "Azriel Alvarado",
