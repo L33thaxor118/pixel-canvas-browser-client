@@ -1,16 +1,14 @@
-const socket = new WebSocket('ws://localhost:8080');
+const socket = new WebSocket('wss://282bm5cqa4.execute-api.us-east-1.amazonaws.com/development/');
 
-interface PaintCommand {
+interface AWSRequest {
+  action: string
+}
+
+interface PaintCommand extends AWSRequest {
   x: number,
   y: number,
   color: number
 }
-
-/**
- * Represent the canvas state collapsed to a single dimension, 
- * with every 16 elements representing a row starting with the topmost one.
- */
-type MatrixStateDTO = Array<number>
 
 /**
  * Represents canvas state in 2 dimensions
@@ -21,15 +19,17 @@ type MatrixStateListener = (event: MatrixState)=>void
 
 var stateListener: MatrixStateListener | null = null
 
-socket.addEventListener('message', function (event) {
-  const stateDto: MatrixStateDTO = JSON.parse(event.data)
-  var matrixState: MatrixState = []
-  const size = 16
-  while (stateDto.length > 0) {
-    matrixState.push(stateDto.splice(0, size))  
+socket.addEventListener('open', () => {
+  const request: AWSRequest = {
+    action: "get"
   }
+  socket.send(JSON.stringify(request))
+})
+
+socket.addEventListener('message', function (event) {
+  const state: MatrixState = JSON.parse(event.data)
   if (stateListener != null) {
-    stateListener(matrixState)
+    stateListener(state)
   }
 });
 
@@ -41,6 +41,7 @@ socket.addEventListener('message', function (event) {
  */
 function paintTile(x: number, y: number, color: number) {
   const message: PaintCommand = {
+    action: "paint",
     x: x,
     y: y,
     color: color
