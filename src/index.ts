@@ -19,6 +19,8 @@ type MatrixStateListener = (event: MatrixState)=>void
 
 var stateListener: MatrixStateListener | null = null
 
+var currentState: MatrixState
+
 socket.addEventListener('open', () => {
   const request: AWSRequest = {
     action: "get"
@@ -27,9 +29,16 @@ socket.addEventListener('open', () => {
 })
 
 socket.addEventListener('message', function (event) {
-  const state: MatrixState = JSON.parse(event.data)
+  const eventData = JSON.parse(event.data)
+  if (Array.isArray(eventData)) {
+    //received a GET message containing entire state
+    currentState = eventData
+  } else {
+    //received a PAINT message containing update
+    currentState[eventData.y][eventData.x] = eventData.color
+  }
   if (stateListener != null) {
-    stateListener(state)
+    stateListener(currentState)
   }
 });
 
