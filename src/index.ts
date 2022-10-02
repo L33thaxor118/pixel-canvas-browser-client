@@ -10,16 +10,15 @@ interface PaintCommand extends AWSRequest {
   color: number
 }
 
-/**
- * Represents canvas state in 2 dimensions
- */
-type MatrixState = Array<Array<number>>
+// Represents canvas state in 2 dimensions
+type CanvasState = Array<Array<number>>
 
-type MatrixStateListener = (event: MatrixState)=>void
+type CanvasStateListener = (event: CanvasState)=>void
 
-var stateListener: MatrixStateListener | null = null
+var stateListener: CanvasStateListener | null = null
 
-var currentState: MatrixState
+// Assume canvas is empty until we receive state from server
+var currentState: CanvasState = Array(16).fill(0).map(_ => Array(16).fill(0))
 
 socket.addEventListener('open', () => {
   const request: AWSRequest = {
@@ -48,7 +47,7 @@ socket.addEventListener('message', function (event) {
  * @param y - y position of pixel to paint, assuming x=0,y=0 is top-left corner
  * @param color - decimal representation of the color to paint
  */
-function paintTile(x: number, y: number, color: number) {
+function paintPixel(x: number, y: number, color: number) {
   const message: PaintCommand = {
     action: "paint",
     x: x,
@@ -58,11 +57,12 @@ function paintTile(x: number, y: number, color: number) {
   socket.send(JSON.stringify(message))
 }
 
-function setStateListener(listener: MatrixStateListener) {
+function setStateListener(listener: CanvasStateListener) {
   stateListener = listener
+  listener(currentState)
 }
 
 export default {
-  paintTile,
+  paintPixel,
   setStateListener
 }
